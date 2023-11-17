@@ -82,7 +82,7 @@ class MemberUpdatePage extends StatelessWidget {
 
           ElevatedButton(onPressed: (){
 
-            selectId(users.memberId, input_pw.text, int.parse(input_age.text), input_name.text, context);
+            updateMember(users.memberId, input_pw.text, int.parse(input_age.text), input_name.text, context);
 
           }, child: Text('회원 수정'))
         ],
@@ -91,10 +91,10 @@ class MemberUpdatePage extends StatelessWidget {
   }
 }
 
-void selectId(id,pw,age, name, context) async{
+void updateMember(id,pw,age, name, context) async{
 
   //본인 url 작성
-  String url = '';
+  String url = 'http://172.30.1.46:8080/member/updateUser';
   Response res = await dio.get(
       url,
       queryParameters: {'id' :id,
@@ -109,6 +109,9 @@ void selectId(id,pw,age, name, context) async{
   if(res.statusCode ==200){
     print(res);
     if(res.toString() == 'success'){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('수정이 완료되었습니다.'))
+      );
       Navigator.pop(context);
     }
   }

@@ -3,10 +3,9 @@ import 'package:dio/dio.dart';
 
 
 final dio = Dio();
+//그대로 카피해도 무관 (selectId 메소드만 생략)
 class JoinPage extends StatelessWidget {
   const JoinPage({super.key});
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +78,7 @@ class JoinPage extends StatelessWidget {
           
           ElevatedButton(onPressed: (){
 
-            selectId(input_id.text, input_pw.text, int.parse(input_age.text), input_name.text, context);
+            joinMember(input_id.text, input_pw.text, input_age.text, input_name.text, context);
 
           }, child: Text('회원 가입'))
          ],
@@ -88,10 +87,10 @@ class JoinPage extends StatelessWidget {
   }
 }
 
-void selectId(id,pw,age, name, context) async{
+void joinMember(id,pw,age, name, context) async{
 
   //본인 url 작성
-  String url = '';
+  String url = 'http://172.30.1.46:8080/member/joinUser';
 
   Response res = await dio.get(
       url,
@@ -102,12 +101,13 @@ void selectId(id,pw,age, name, context) async{
       }
   );
 
-
-  if(res.statusCode ==200){
-    print(res);
-    if(res.toString() == 'success'){
-      Navigator.pop(context);
-    }
-  }
+  print(res);
+  // if(res.statusCode ==200){
+  //   print(res);
+  //   if(res.toString() == 'success'){
+  //     Navigator.pop(context);
+  //   }
+  // }
 
 }
+

@@ -8,6 +8,9 @@ import 'package:dio/dio.dart';
 import 'package:test_db_flutter/screen/login_success_page.dart';
 
 final dio = Dio();
+final storage = FlutterSecureStorage(); // FlutterSecureStorage를 storage로 저장
+dynamic userInfo = ''; // storage에 있는 유저 정보를 저장
+
 class ExLoginPage extends StatefulWidget {
   const ExLoginPage({super.key});
 
@@ -26,16 +29,14 @@ class _ExLoginPageState extends State<ExLoginPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _readLoginInfo();
     });
-
-
   }
 
+
+
+
+  //여기서부터 복사 해서 build메소드만 복사하기
   TextEditingController emailCon = TextEditingController();
   TextEditingController pwCon = TextEditingController();
-
-  static final storage = FlutterSecureStorage(); // FlutterSecureStorage를 storage로 저장
-  dynamic userInfo = ''; // storage에 있는 유저 정보를 저장
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,6 +53,7 @@ class _ExLoginPageState extends State<ExLoginPage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    controller: emailCon,
                     decoration: InputDecoration(
                         label: Row(
                           children: [
@@ -67,6 +69,7 @@ class _ExLoginPageState extends State<ExLoginPage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    controller: pwCon,
                       decoration: InputDecoration(
                         label: Row(
                           children: [
@@ -83,9 +86,9 @@ class _ExLoginPageState extends State<ExLoginPage> {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blueAccent),
                         onPressed: () {
-                          //emailCon.text
-                          //pwCon.text
-                          selectId('test', '12345',context);
+
+                          // selectId('test', '12345',context);
+                          selectId(emailCon.text, pwCon.text,context);
                         },
                         child: Text('로그인하기')),
                     ElevatedButton(
@@ -124,7 +127,8 @@ class _ExLoginPageState extends State<ExLoginPage> {
     var user = userModelFromJson(userInfo);
     // user의 정보가 있다면 로그인 후 들어가는 첫 페이지로 넘어가게 합니다.
     if (userInfo != null) {
-      Navigator.push(context, MaterialPageRoute(builder: (_)=> LoginSuccessPage(users: user[0],)));
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>LoginSuccessPage(users: user[0])), (route) => false);
+      //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=> LoginSuccessPage(users: user[0],),(route) =>true));
     } else {
       print('로그인이 필요합니다');
     }
@@ -133,7 +137,7 @@ class _ExLoginPageState extends State<ExLoginPage> {
   void selectId(id,pw, context) async{
 
     //본인 url 작성
-    String url = '';
+    String url = 'http://172.30.1.46:8080/member/login';
     Response res = await dio.get(
         url,
         queryParameters: {'id' :id,
@@ -152,9 +156,10 @@ class _ExLoginPageState extends State<ExLoginPage> {
     try{
       var user = userModelFromJson(res.data);
       print(user[0]);
-      await storage.write(key: 'login', value: res.data);
-      //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=> LoginSuccessPage()), (route) => false);
-      Navigator.push(context, MaterialPageRoute(builder: (_)=> LoginSuccessPage(users: user[0],)));
+
+      await storage.write(key: 'login', value: res.data); // 로그아웃 파트
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=> LoginSuccessPage(users: user[0])), (route) => false);
+      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=> LoginSuccessPage(users: user[0],)));
     }catch(e){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('로그인 정보가 잘못 되었습니다.'))

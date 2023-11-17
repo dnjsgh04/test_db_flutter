@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:test_db_flutter/sample/sample_messege.dart';
 import 'package:test_db_flutter/screen/join_page.dart';
 import 'package:test_db_flutter/screen/login_page.dart';
 import 'package:test_db_flutter/screen/login_success_page.dart';
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ExGetPage(),
+      home: ExLoginPage(),
     );
   }
 }
